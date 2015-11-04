@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:layout_height="wrap_content"
+    android:layout_width="fill_parent"
+    android:padding="10dip"
+    android:orientation="horizontal"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/outerLayout">
+    <CheckBox xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/checkbox"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:checked="false">
+    </CheckBox>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/innerlayout">
+        <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/toDoName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:textSize="20sp"
+            android:text="Something I have to do"/>
+        <TextView
+            android:id="@+id/dateAdded"
+            android:text="Added 1 day ago"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:paddingLeft="10dp"/>
+    </LinearLayout>
+</LinearLayout>
