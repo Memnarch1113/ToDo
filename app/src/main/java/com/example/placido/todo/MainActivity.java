@@ -16,8 +16,6 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, DialogInterface.OnClickListener {
 
-    //Hello 
-
     EditText txtItem;
     Button btn;
     ListView listView;
