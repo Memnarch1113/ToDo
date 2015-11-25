@@ -20,17 +20,15 @@ import java.util.List;
  */
 public class ToDoListAdapter extends ArrayAdapter<toDoItem> {
 
-    public ToDoListAdapter(Context context, int textViewResourceId) {
-        super(context, textViewResourceId);
-    }
-
+    private Context context;
     public ToDoListAdapter(Context context, int resource, List<toDoItem> items) {
         super(context, resource, items);
+        this.context = context;
     }
 
     @Override
     //THIS IS THE IMPORTANT METHOD, that does all of the work to give the ListView what it needs to display
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
 
         View v = convertView; //No idea what this is
 
@@ -62,16 +60,35 @@ public class ToDoListAdapter extends ArrayAdapter<toDoItem> {
 
             if (completeBox != null) {
                 completeBox.setChecked(p.isCompleted());
-                //This code doesn't work, but It was intended to make the TextViews be struck out when the ToDoItem was completed.
-                //TODO: Get the list items to be struck out when they are completed.
-                if (p.isCompleted()) {
+                //When drawing a toDoItem for the first time, check to see if it's marked complete. If it is, mark it's name and date created to be drawn as struckthrough
+                if (p.isCompleted() && nameView != null && dateView != null) {
                     nameView.setPaintFlags(nameView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                     dateView.setPaintFlags(dateView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                 }
+
+                //When you're done with that, make a listener for the checkbox, that will wait until user clicks on it,
+                //when they do make the text struckthrough or not, depending on whether or not the
+                //checkbox is now checked or clear
+                //TODO: When you click a checkbox -> text gets struck through. The next item you add to the list will also be struck through for some reason
                 completeBox.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        LinearLayout outerList = (LinearLayout) v.getParent();
+
+                        LinearLayout outerList = (LinearLayout) v.getParent();//Get the container of the checkbox so we can find the text views that show the name and date of the todoitem
+                        TextView nameField = (TextView) outerList.findViewById(R.id.toDoName);//Fetch the name field
+                        TextView dateField = (TextView) outerList.findViewById(R.id.dateAdded);//Fetch the date field
+                        CheckBox c = (CheckBox) v;//Cast the checkbox so we can see if it is checked
+                        if (c.isChecked()) {//If the checkbox is now checked, set both of those fields to struck through
+                            nameField.setPaintFlags(nameField.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                            dateField.setPaintFlags(dateField.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                        }
+                        else {//Set both of those fields to not struck through
+                            nameField.setPaintFlags(1);
+                            dateField.setPaintFlags(1);
+                        }
+                        if (context instanceof MainActivity){
+                            ((MainActivity) context).toggleCompleted(position);
+                        }
 
                     }
                 });

@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,7 +17,6 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, DialogInterface.OnClickListener {
 
-    //Hello 
 
     EditText txtItem;
     Button btn;
@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
        btn.setOnClickListener(this);
 
-        todoList = new ArrayList<toDoItem>();
+        todoList = new ArrayList<>();
         aa = new ToDoListAdapter(this, android.R.layout.simple_list_item_1, todoList);
         listView.setAdapter(aa); // sent an adapter to the control
 
@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public boolean onOptionsItemSelected(MenuItem item){
         super.onOptionsItemSelected(item);
-        if(item.hasSubMenu() == false){
+        if(!item.hasSubMenu()){
             if(item.getTitle() == "Do Something Healthy"){
                 this.displayPopup("Do Something Healthy", getResources().getStringArray(R.array.do_something_healthy)); //pass different arguments to popfunction, passing do something healthy array
 
@@ -123,5 +123,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(DialogInterface arg0, int arg1){
        // if(selectedmenu == "Do something healthy") this.addItem(this.DoSomethingHealthy[order]);
+    }
+
+    public void toggleCompleted(int position){
+        if (todoList.get(position).isCompleted()){
+            todoList.get(position).setCompleted(false);
+        }
+        else {
+            todoList.get(position).setCompleted(true);
+        }
+        this.aa.notifyDataSetChanged();
+        Log.d("MyTag","TOGGLED");
     }
 }

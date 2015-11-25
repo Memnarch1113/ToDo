@@ -17,12 +17,11 @@ public class toDoItem {
     private String name;
     private String catagory;
     private String dateCreated;
-
+    private boolean completed;
     public toDoItem (String name) {
         this.name = name;
-       // Calendar c = Calendar.getInstance();
-       // this.dateCreated = c.toString();
         this.dateCreated = "Created Today";
+        this.completed = false;
 
     }
     public void setName(String name) {
@@ -40,9 +39,6 @@ public class toDoItem {
     public void setCompleted(boolean completed) {
         this.completed = completed;
     }
-
-    private boolean completed;
-
 
     public boolean isCompleted() {
         return completed;
