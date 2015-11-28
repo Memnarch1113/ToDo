@@ -1,16 +1,13 @@
 package com.example.placido.todo;
 
 import android.content.Context;
-import android.graphics.Paint;
+import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.LinearLayout;
+import android.widget.CursorAdapter;
 import android.widget.TextView;
-
-import java.util.List;
 
 /**
  * Created by Gabe on 10/29/2015.
@@ -18,13 +15,46 @@ import java.util.List;
  * to the ListView as a view so that it can be displayed in the activity.
  * I don't completely understand alllll of the code (mostly the constructors) since I got it from a website
  */
-public class ToDoListAdapter extends ArrayAdapter<toDoItem> {
+public class ToDoListAdapter extends CursorAdapter {
 
-    private Context context;
-    public ToDoListAdapter(Context context, int resource, List<toDoItem> items) {
-        super(context, resource, items);
-        this.context = context;
+    public ToDoListAdapter(Context context, Cursor cursor, int flags){
+        super(context, cursor, 0);
     }
+
+    //This inflates a new view and returns it (it doesn't store any values from the database yet)
+    @Override
+    public View newView(Context context, Cursor cursor, ViewGroup parent){
+        return LayoutInflater.from(context).inflate(R.layout.task_row,parent,false);
+    }
+
+    // The bindView method is used to bind all data to a given view
+    // such as setting the text on a TextView.
+    @Override
+    public void bindView(View view, Context context, Cursor cursor) {
+
+        //Get the elements from the layout for the ListView row (the layout task_row)
+        TextView nameView = (TextView) view.findViewById(R.id.toDoName);
+        TextView dateView = (TextView) view.findViewById(R.id.dateAdded);
+        CheckBox completeBox = (CheckBox) view.findViewById(R.id.checkbox);
+
+        //Get the values for each element from the cursor
+        String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
+        String date = cursor.getString(cursor.getColumnIndexOrThrow("date"));
+        int isComplete = cursor.getInt(cursor.getColumnIndexOrThrow("isComplete"));
+
+        //Set the elements in the UI to reflect these fetched values
+        nameView.setText(name);
+        dateView.setText(date);
+        if (isComplete == 0){
+            completeBox.setChecked(false);
+        }
+        else {
+            completeBox.setChecked(true);
+        }
+    }
+
+/*
+        THIS IS OLD CODE FROM THE OLD VERSION OF THE TODOLISTADAPTER
 
     @Override
     //THIS IS THE IMPORTANT METHOD, that does all of the work to give the ListView what it needs to display
@@ -69,7 +99,6 @@ public class ToDoListAdapter extends ArrayAdapter<toDoItem> {
                 //When you're done with that, make a listener for the checkbox, that will wait until user clicks on it,
                 //when they do make the text struckthrough or not, depending on whether or not the
                 //checkbox is now checked or clear
-                //TODO: When you click a checkbox -> text gets struck through. The next item you add to the list will also be struck through for some reason
                 completeBox.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -98,4 +127,5 @@ public class ToDoListAdapter extends ArrayAdapter<toDoItem> {
 
         return v;//Then after populating the layout, the adapter returns the view to the ListView, which adds it as a row it displays.
     }
+    */
 }

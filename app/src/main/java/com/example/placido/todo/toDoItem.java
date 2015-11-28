@@ -1,7 +1,7 @@
 package com.example.placido.todo;
 
 
-import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by Gabe on 10/24/2015.
@@ -20,7 +20,7 @@ public class toDoItem {
     private boolean completed;
     public toDoItem (String name) {
         this.name = name;
-        this.dateCreated = "Created Today";
+        this.dateCreated = new Date().toString();
         this.completed = false;
 
     }
