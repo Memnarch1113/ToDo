@@ -2,22 +2,26 @@ package com.example.placido.todo;
 
 import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, DialogInterface.OnClickListener {
 
-
+    Context context;
     EditText txtItem;
     Button btn;
     ListView listView;
@@ -25,7 +29,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //ArrayList<toDoItem> todoList; //data source
     private SQLiteDatabase db;
 
-    ToDoListAdapter aa; //data bridge between arraylist (data source) and listview (control)
+    ToDoListAdapter ca; //data bridge between data source and listview (control)
 
     String selectedmenu;
 
@@ -42,9 +46,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
        // todoList = new ArrayList<>();
-       // aa = new ToDoListAdapter(this, android.R.layout.simple_list_item _1, todoList);
+       // ca = new ToDoListAdapter(this, android.R.layout.simple_list_item _1, todoList);
 
-        //Get a new databse helper, then start a new database (or find one that alrady exists)
+        this.context = this;
+        //Get a new database helper, then start a new database (or find one that already exists)
         ToDoItemsContract.todoDbHelper myDbHelper = new ToDoItemsContract(). new todoDbHelper(this.getBaseContext());
         this.db = myDbHelper.getWritableDatabase();
 
@@ -52,8 +57,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Cursor cursor = db.rawQuery("SELECT  * FROM " + ToDoItemsContract.TodoEntry.TABLE_NAME, null);
 
         //Initialize the adapter, and give it the cursor with all of the entries from the database. Then assign it to the ListView
-        this.aa = new ToDoListAdapter(this.getBaseContext(),cursor,0);
-        listView.setAdapter(aa); // sent an adapter to the control
+        this.ca = new ToDoListAdapter(this.getBaseContext(),cursor,0);
+        listView.setAdapter(ca); // sent an adapter to the control
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, final View view, int position, long id) {
+                Log.d("MYTAG", "YOU JUST LONGCLICKED");
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle("TodoOptions");
+                builder.setMessage("Delete this todo?");
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (context instanceof MainActivity) {
+                            TextView dateField = (TextView) view.findViewById(R.id.dateAdded);
+                            ((MainActivity) context).deleteFromList(dateField.getText().toString());
+                            Log.d("MYTAG", "Just sent the following data for deletion:" + dateField.getText().toString());
+                        }
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+                return true;
+            }
+        });
 
 
         btn.setOnClickListener(this);
@@ -150,10 +183,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //Now: get a new cursor of all the items in the database, so that it includes the new one we just added
             Cursor cursor = db.rawQuery("SELECT  * FROM " + ToDoItemsContract.TodoEntry.TABLE_NAME, null);
             //Pass that new cursor to the adapter
-            aa.changeCursor(cursor);
+            ca.changeCursor(cursor);
             //Tell the adapter to update the ListView with the new todoItem
-            this.aa.notifyDataSetChanged(); //notifying array adapter that there are some changes
+            this.ca.notifyDataSetChanged(); //notifying adapter that there are some changes
         }
+    }
+    //THANKS TO MY ROOMATE YARON FOR UX TESTING!!!!!!
+    public void deleteFromList(String nameOfTodo){
+        String selection = ToDoItemsContract.TodoEntry.COLUMN_FOUR_NAME_TITLE + " LIKE ?";
+        String[] selectionArgs = { nameOfTodo };
+        db.delete(ToDoItemsContract.TodoEntry.TABLE_NAME, selection, selectionArgs);
+        Cursor cursor = db.rawQuery("SELECT  * FROM " + ToDoItemsContract.TodoEntry.TABLE_NAME, null);
+        ca.changeCursor(cursor);
+        this.ca.notifyDataSetChanged(); //notifying adapter that there are some changes
     }
 
     @Override
@@ -168,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         else {
             todoList.get(position).setCompleted(true);
         }
-        this.aa.notifyDataSetChanged();
+        this.ca.notifyDataSetChanged();
         Log.d("MyTag","TOGGLED");
     }
     */
