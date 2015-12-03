@@ -54,7 +54,8 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:clickable="true"
-            tools:listitem="@android:layout/simple_list_item_multiple_choice" />
+            tools:listitem="@android:layout/simple_list_item_multiple_choice"
+            android:animateLayoutChanges="true"/>
 
     </RelativeLayout>
 

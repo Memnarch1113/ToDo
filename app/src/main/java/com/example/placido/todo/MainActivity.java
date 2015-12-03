@@ -1,5 +1,6 @@
 package com.example.placido.todo;
 
+import android.animation.LayoutTransition;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
@@ -39,16 +40,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        //This is the normal stuff on all activites
 
         txtItem = (EditText)findViewById(R.id.editText);
         btn = (Button)findViewById(R.id.button);
         listView = (ListView)findViewById(R.id.listView);
+        //find all of the important views in the layout
+
+        this.context = this; //This just lets us call methods in this class from the listeners below
 
 
-       // todoList = new ArrayList<>();
-       // ca = new ToDoListAdapter(this, android.R.layout.simple_list_item _1, todoList);
-
-        this.context = this;
         //Get a new database helper, then start a new database (or find one that already exists)
         ToDoItemsContract.todoDbHelper myDbHelper = new ToDoItemsContract(). new todoDbHelper(this.getBaseContext());
         this.db = myDbHelper.getWritableDatabase();
@@ -59,32 +60,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //Initialize the adapter, and give it the cursor with all of the entries from the database. Then assign it to the ListView
         this.ca = new ToDoListAdapter(this.getBaseContext(),cursor,0);
         listView.setAdapter(ca); // sent an adapter to the control
+
+        //Set a listener that will show off the delete item dialog box when the user clicks on a given todoitem
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, final View view, int position, long id) {
-                Log.d("MYTAG", "YOU JUST LONGCLICKED");
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setTitle("TodoOptions");
-                builder.setMessage("Delete this todo?");
+                //Log.d("MYTAG", "YOU JUST LONGCLICKED");
+                AlertDialog.Builder builder = new AlertDialog.Builder(context); //Make a new dialog builder (it creates the dialog for us)
+                builder.setTitle("TodoOptions");//Set the title of the dialog box
+                builder.setMessage("Delete this todo?");//Set the text displayed by the dialog box
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (context instanceof MainActivity) {
-                            TextView dateField = (TextView) view.findViewById(R.id.dateAdded);
-                            ((MainActivity) context).deleteFromList(dateField.getText().toString());
-                            Log.d("MYTAG", "Just sent the following data for deletion:" + dateField.getText().toString());
+                    public void onClick(DialogInterface dialog, int which) { //Add in a button that will confirm the delete action. This requires another listener for this ok button
+                        //The ok button listener needs to tell the activity class to run its 'delete an item' method, and it needs to tell that method which one to delete
+                        if (context instanceof MainActivity) { //Make sure that you're calling the 'delete an item' method from the main activity class, and not some other class
+                            TextView dateField = (TextView) view.findViewById(R.id.dateAdded);//Get the date field from the item that got long-pressed. We'll use this (since it should be unique to the todoitem in question)
+                            ((MainActivity) context).deleteFromList(dateField.getText().toString());//Now, get the date string out of the TextView, and pass it back to the main activity
+                            //Log.d("MYTAG", "Just sent the following data for deletion:" + dateField.getText().toString());
                         }
                     }
                 });
+                //Also, make a cancel button that doesn't do anything.
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
                     }
                 });
-                AlertDialog dialog = builder.create();
-                dialog.show();
-                return true;
+
+                AlertDialog dialog = builder.create(); //Then, formally create the dialog
+                dialog.show(); //show the new dialog box
+                return true;//Return that you handled the button press alright, no issues
             }
         });
 
@@ -147,7 +153,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         return super.onOptionsItemSelected(item);
     }*/
-    //This method happens when the button is called, it calls the addItem method to actually go through the motions of updating the list
+
+
+    //This method happens when the add button is called, it calls the addItem method to actually go through the motions of updating the list
     @Override
     public void onClick(View v){
         if(v == this.btn){ //check if listener has been initiated by button or something else
@@ -181,21 +189,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             long newRowId = db.insert(ToDoItemsContract.TodoEntry.TABLE_NAME, ToDoItemsContract.TodoEntry.COLUMN_ONE_ENTRY_ID, newItem);
 
             //Now: get a new cursor of all the items in the database, so that it includes the new one we just added
-            Cursor cursor = db.rawQuery("SELECT  * FROM " + ToDoItemsContract.TodoEntry.TABLE_NAME, null);
-            //Pass that new cursor to the adapter
-            ca.changeCursor(cursor);
-            //Tell the adapter to update the ListView with the new todoItem
-            this.ca.notifyDataSetChanged(); //notifying adapter that there are some changes
+            displayDatabaseChanges();//update the ListView
         }
     }
     //THANKS TO MY ROOMATE YARON FOR UX TESTING!!!!!!
+    //This method will take a date to find the corresponding todoitem to delete
     public void deleteFromList(String nameOfTodo){
-        String selection = ToDoItemsContract.TodoEntry.COLUMN_FOUR_NAME_TITLE + " LIKE ?";
-        String[] selectionArgs = { nameOfTodo };
-        db.delete(ToDoItemsContract.TodoEntry.TABLE_NAME, selection, selectionArgs);
+        String selection = ToDoItemsContract.TodoEntry.COLUMN_FOUR_NAME_TITLE + " LIKE ?"; //Set up the SQLite search syntax. Tell the database you're looking for information in the 'date' column
+        String[] selectionArgs = { nameOfTodo };//This is the array of keys to search for (in this case, just one)
+        db.delete(ToDoItemsContract.TodoEntry.TABLE_NAME, selection, selectionArgs);//Then, tell the database to delete the entries that match the selection args in the given column (date)
+        displayDatabaseChanges(); //Update the ListView
+    }
+
+    public void displayDatabaseChanges(){
         Cursor cursor = db.rawQuery("SELECT  * FROM " + ToDoItemsContract.TodoEntry.TABLE_NAME, null);
+        LayoutTransition layoutTransition = listView.getLayoutTransition();
+        //listView.setLayoutTransition(null);
         ca.changeCursor(cursor);
         this.ca.notifyDataSetChanged(); //notifying adapter that there are some changes
+        listView.setLayoutTransition(layoutTransition);
     }
 
     @Override
