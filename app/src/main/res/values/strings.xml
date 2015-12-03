@@ -4,7 +4,7 @@
     <string name="add_to_list">Add to my list</string>
     <string-array name="do_something_healthy" >
         <item>"Exercise"</item>
-        <item>"Medidate"</item>
+        <item>"Meditate"</item>
         <item>"Go Running"</item>
     </string-array>
     <string-array name="shopping">
@@ -13,5 +13,10 @@
         <item>"Eggs"</item>
         <item>"Clothes"</item>
         <item>"Cleaning supplies"</item>
+    </string-array>
+    <string-array name="prompts">
+        <item>"You have an outstanding task!"</item>
+        <item>"Don't forget about your task!"</item>
+        <item>"Urgent! Your task is waiting!"</item>
     </string-array>
 </resources>
