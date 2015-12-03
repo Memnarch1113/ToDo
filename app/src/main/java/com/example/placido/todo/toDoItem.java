@@ -1,7 +1,7 @@
 package com.example.placido.todo;
 
 
-import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by Gabe on 10/24/2015.
@@ -17,12 +17,11 @@ public class toDoItem {
     private String name;
     private String catagory;
     private String dateCreated;
-
+    private boolean completed;
     public toDoItem (String name) {
         this.name = name;
-       // Calendar c = Calendar.getInstance();
-       // this.dateCreated = c.toString();
-        this.dateCreated = "Created Today";
+        this.dateCreated = new Date().toString();
+        this.completed = false;
 
     }
     public void setName(String name) {
@@ -40,9 +39,6 @@ public class toDoItem {
     public void setCompleted(boolean completed) {
         this.completed = completed;
     }
-
-    private boolean completed;
-
 
     public boolean isCompleted() {
         return completed;
