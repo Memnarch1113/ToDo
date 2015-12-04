@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -37,9 +38,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     String selectedmenu;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.splash);
+        //display the logo during 5 secondes,
+        new CountDownTimer(5000,1000){
+            @Override
+            public void onTick(long millisUntilFinished){}
+
+            @Override
+            public void onFinish() {
+                //set the new Content of your activity
+                MainActivity.this.setContentView(R.layout.activity_main);
+            }
+        };
+       // super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -231,3 +246,4 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     */
 }
+
