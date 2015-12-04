@@ -14,9 +14,10 @@ public class ToDoItemsContract {
         public static final String TABLE_NAME = "entry";
         //These are the different columns that store all of the data of each todoitem.
         public static final String COLUMN_ONE_ENTRY_ID = "nameid";
-        public static final String COLUMN_TWO_NAME_TITLE = "name";
-        public static final String COLUMN_THREE_NAME_TITLE = "isComplete";
-        public static final String COLUMN_FOUR_NAME_TITLE = "date";
+        public static final String COLUMN_TWO_NAME = "name";
+        public static final String COLUMN_THREE_ISCOMPLETE = "isComplete";
+        public static final String COLUMN_FOUR_DATE_CREATED = "date";
+        public static final String COLUMN_FIVE_DATE_DUE = "dateDue";
     }
     //These define the different pieces of SQLite text that need to be sent to set up a database, initialize it, query it, etc
     private static final String TEXT_TYPE = " TEXT";
@@ -26,14 +27,15 @@ public class ToDoItemsContract {
             "CREATE TABLE " + TodoEntry.TABLE_NAME + " (" +
                     TodoEntry._ID + " INTEGER PRIMARY KEY," +
                     TodoEntry.COLUMN_ONE_ENTRY_ID + TEXT_TYPE + COMMA_SEP +
-                    TodoEntry.COLUMN_TWO_NAME_TITLE + TEXT_TYPE + COMMA_SEP +
-                    TodoEntry.COLUMN_THREE_NAME_TITLE + INT_TYPE + COMMA_SEP +
-                    TodoEntry.COLUMN_FOUR_NAME_TITLE + TEXT_TYPE +
+                    TodoEntry.COLUMN_TWO_NAME + TEXT_TYPE + COMMA_SEP +
+                    TodoEntry.COLUMN_THREE_ISCOMPLETE + INT_TYPE + COMMA_SEP +
+                    TodoEntry.COLUMN_FOUR_DATE_CREATED + TEXT_TYPE + COMMA_SEP +
+                    TodoEntry.COLUMN_FIVE_DATE_DUE + TEXT_TYPE +
                     " )";
     public static String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + TodoEntry.TABLE_NAME;
 
     public class todoDbHelper extends SQLiteOpenHelper {
-        public static final int DATABASE_VERSION = 1;
+        public static final int DATABASE_VERSION = 3;
         public static final String DATABSE_NAME = "TodoReader.db";
 
         public todoDbHelper(Context context){

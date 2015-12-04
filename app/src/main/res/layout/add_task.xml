@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TextView
+            android:padding="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/task_name"
+            android:id="@+id/tasknameTV" />
+
+        <Button
+            android:padding="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Set Date"
+            android:id="@+id/setDateBtn"
+            android:layout_below="@id/tasknameTV"/>
+        <Button
+            android:padding="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Set Time"
+            android:id="@+id/setTimeBtn"
+            android:layout_below="@id/tasknameTV"
+            android:layout_toRightOf="@id/setDateBtn"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Save"
+            android:layout_below="@id/setDateBtn"
+            android:id="@+id/saveBtn"
+            android:onClick="onSave"/>
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/taskET"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/setDateBtn" />
+
+    </RelativeLayout>
+
+</LinearLayout>

@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -19,6 +20,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, DialogInterface.OnClickListener {
 
@@ -93,42 +96,43 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 return true;//Return that you handled the button press alright, no issues
             }
         });
-
-
-        btn.setOnClickListener(this);
-
-
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        //getMenuInflater().inflate(R.menu.menu_main, menu); *commented out because not going to use xml file
-
-        super.onCreateOptionsMenu(menu);
-        menu.add("Do Something Healthy");
-        menu.add("Shopping");
+        getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
-    public boolean onOptionsItemSelected(MenuItem item){
-        super.onOptionsItemSelected(item);
-        if(!item.hasSubMenu()){
-            if(item.getTitle() == "Do Something Healthy"){
-                this.displayPopup("Do Something Healthy", getResources().getStringArray(R.array.do_something_healthy)); //pass different arguments to popfunction, passing do something healthy array
-
-            }
-            if(item.getTitle() == "Shopping"){
-                this.displayPopup("Shopping", getResources().getStringArray(R.array.shopping));
-
-            }
-
-            selectedmenu = item.getTitle().toString();
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.add_button:
+                startActivityForResult(new Intent(this, AddTask.class), 1);
+                Log.d("me", "JUST PRESSED THE ADD BUTTON");
+                return true;
+            case R.id.action_settings:
+                return true;
         }
-        //logic
-        //call a function to display pop up according to menu selected
+        return super.onOptionsItemSelected(item);
+    }
 
-        return true;
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                String name = data.getStringExtra("name");
+                String dateCreated = new Date().toString();
+                String dateDue = data.getStringExtra("dateDue");
+                ContentValues newRow = new ContentValues();
+                newRow.put(ToDoItemsContract.TodoEntry.COLUMN_TWO_NAME, name );
+                newRow.put(ToDoItemsContract.TodoEntry.COLUMN_THREE_ISCOMPLETE, 0);
+                newRow.put(ToDoItemsContract.TodoEntry.COLUMN_FOUR_DATE_CREATED, dateCreated);
+                newRow.put(ToDoItemsContract.TodoEntry.COLUMN_FIVE_DATE_DUE, dateDue);
+                db.insert(ToDoItemsContract.TodoEntry.TABLE_NAME, ToDoItemsContract.TodoEntry.COLUMN_ONE_ENTRY_ID, newRow);
+                displayDatabaseChanges();
+            }
+        }
     }
 
     private void displayPopup(String title, String[] item){ //generates popup which had to implement dialoginterface
@@ -174,16 +178,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //Initialize a new item to be added to the database
             ContentValues newItem = new ContentValues();
             //Assign this new item the name passed from the EditText field
-            newItem.put(ToDoItemsContract.TodoEntry.COLUMN_TWO_NAME_TITLE, item.getName());
+            newItem.put(ToDoItemsContract.TodoEntry.COLUMN_TWO_NAME, item.getName());
             //Since Databases don't support boolean fields, if the todoitem is completed, pass in a 1, otherwise pass in a 0
             if (item.isCompleted()){
-                newItem.put(ToDoItemsContract.TodoEntry.COLUMN_THREE_NAME_TITLE, 1);
+                newItem.put(ToDoItemsContract.TodoEntry.COLUMN_THREE_ISCOMPLETE, 1);
             }
             else {
-                newItem.put(ToDoItemsContract.TodoEntry.COLUMN_THREE_NAME_TITLE, 0);
+                newItem.put(ToDoItemsContract.TodoEntry.COLUMN_THREE_ISCOMPLETE, 0);
             }
             //Finally, pass in the date the todoItem was created
-            newItem.put(ToDoItemsContract.TodoEntry.COLUMN_FOUR_NAME_TITLE, item.getDateCreated());
+            newItem.put(ToDoItemsContract.TodoEntry.COLUMN_FOUR_DATE_CREATED, item.getDateCreated());
 
             //Last: insert the new item into the database
             long newRowId = db.insert(ToDoItemsContract.TodoEntry.TABLE_NAME, ToDoItemsContract.TodoEntry.COLUMN_ONE_ENTRY_ID, newItem);
@@ -195,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //THANKS TO MY ROOMATE YARON FOR UX TESTING!!!!!!
     //This method will take a date to find the corresponding todoitem to delete
     public void deleteFromList(String nameOfTodo){
-        String selection = ToDoItemsContract.TodoEntry.COLUMN_FOUR_NAME_TITLE + " LIKE ?"; //Set up the SQLite search syntax. Tell the database you're looking for information in the 'date' column
+        String selection = ToDoItemsContract.TodoEntry.COLUMN_FOUR_DATE_CREATED + " LIKE ?"; //Set up the SQLite search syntax. Tell the database you're looking for information in the 'date' column
         String[] selectionArgs = { nameOfTodo };//This is the array of keys to search for (in this case, just one)
         db.delete(ToDoItemsContract.TodoEntry.TABLE_NAME, selection, selectionArgs);//Then, tell the database to delete the entries that match the selection args in the given column (date)
         displayDatabaseChanges(); //Update the ListView
